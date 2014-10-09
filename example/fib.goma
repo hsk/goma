@@ -6,7 +6,7 @@ fib(a:int):int =
   else       return fib(a-2)+fib(a-1)
 
 Fib trait {
-  fib:()=>int
+  fib():int
 }
 
 Int class (x:int)

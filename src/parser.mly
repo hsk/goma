@@ -41,6 +41,16 @@ let addBlock = function
 
 %%
 
+typ:
+| MUL typ { TPtr $2 }
+| ID { Ty $1 }
+| LPAREN RPAREN ARROW ID { TFun(Ty $4, []) }
+
+typs:
+| typ { [$1]}
+| typ COMMA typs { $1 :: $3 }
+
+
 simple_exp:
 | LPAREN exp RPAREN
     { $2 }
@@ -49,6 +59,10 @@ simple_exp:
 | STRING
     { EString($1) }
 | ID { EVar($1)}
+
+exps:
+| exp {[$1]}
+| exp COMMA exps { $1 :: $3 }
 
 exp:
 | simple_exp { $1 }
@@ -85,6 +99,10 @@ exp:
 
 | init { $1 }
 
+inits:
+| init {[$1]}
+| init COMMA inits { $1 :: $3 }
+
 init:
 | ID LPAREN RPAREN {
     ECall(EVar $1, [])
@@ -95,15 +113,6 @@ init:
 | ID LPAREN exps COMMA RPAREN {
     ECall(EVar $1, $3)
 }
-
-
-inits:
-| init {[$1]}
-| init COMMA inits { $1 :: $3 }
-
-exps:
-| exp {[$1]}
-| exp COMMA exps { $1 :: $3 }
 
 stmts:
 | stmt {[$1]}
@@ -161,9 +170,21 @@ def:
     SStruct($3, $1,(Ty "", SCon($5,inits,SBlock []))::mems)
 }
 
-| ID TRAIT LBRACE str_mems RBRACE { STrait($1, $4) }
+| ID TRAIT LBRACE trait_defs RBRACE { STrait($1, $4) }
 | ID IMPLEMENT ID LBRACE defs RBRACE { SImpl($3, $1, $5) }
 | ID RIMPLEMENT ID LBRACE defs RBRACE { SImpl($1, $3, $5) }
+
+trait_defs:
+| trait_def {[$1]}
+| trait_def trait_defs { $1 :: $2 }
+
+trait_def:
+| ID LPAREN RPAREN COLON ID{
+    TFun(Ty $5, []), SExp(EVar $1)
+}
+| ID LPAREN prms RPAREN COLON ID {
+    TFun(Ty $6, List.map (fun (t,_)->t) $3), SExp(EVar $1)
+}
 
 prms:
 | ID COLON typ { [$3, $1] }
@@ -172,15 +193,6 @@ prms:
 str_mems:
 | str_mem { [$1] }
 | str_mem str_mems { $1::$2 }
-
-typ:
-| MUL typ { TPtr $2 }
-| ID { Ty $1 }
-| LPAREN RPAREN ARROW ID { TFun(Ty $4, []) }
-
-typs:
-| typ { [$1]}
-| typ COMMA typs { $1 :: $3 }
 
 str_mem:
 | ID COLON LPAREN typs RPAREN ARROW ID { (TFun(Ty $7, $4), SExp(EVar $1)) }
