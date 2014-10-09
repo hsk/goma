@@ -9,7 +9,7 @@ let compile input output =
   let inp = open_in (input) in
   let lexbuf = Lexing.from_channel inp in
   let ast = Parser.stmts Lexer.token lexbuf in
-  let (ast:Stmt.t) = cnv(SList(ast)) in
+  let (ast:Stmt.t) = Translate.trans_stmt(SList(ast)) in
   let buf = Buffer.create 1024 in
   let formatter = Format.formatter_of_buffer buf in
   Stmt.print formatter ast;

@@ -12,6 +12,7 @@ FILES[] =
   parser
   lexer
   utils
+  translate
   main
 
 PROGRAM = ../gomac

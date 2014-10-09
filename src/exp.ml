@@ -13,8 +13,7 @@ type e =
   | EEmpty
   | ECast of Ty.t * e
 
-let rec print sp ppf e =
-  match e with
+let rec print sp ppf = function
   | EInt i -> fprintf ppf "%s%d" sp i
   | EVar i -> fprintf ppf "%s%s" sp i
   | EString i -> fprintf ppf "%s%s" sp i
