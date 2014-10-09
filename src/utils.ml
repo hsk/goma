@@ -1,17 +1,3 @@
-let fout = ref stdout
-
-let asm_close () =
-  close_out !fout;
-  fout := stdout
-
-let asm_open filename =
-  fout := open_out filename
-
-let asm_p x =
-  output_string !fout ("  " ^ x ^ "\n")
-let asm x =
-  output_string !fout (x ^ "\n")
-
 let exec cmd =
   let env = Unix.environment () in
   let cmd_out, cmd_in, cmd_err = Unix.open_process_full cmd env in
@@ -41,17 +27,3 @@ let exec cmd =
   | Unix.WSTOPPED(c) -> c in
 
   (!outs,!errs,string_of_int code)
-
-let count = ref 0
-
-let genid s =
-  count := !count + 1;
-  s ^ (string_of_int !count)
-
-module M = Map.Make(String)
-module IntMap = Map.Make(
-  struct
-    type t = int
-    let compare = compare
-  end
-)
