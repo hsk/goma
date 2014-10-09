@@ -5,14 +5,12 @@ USE_OCAMLFIND = true
 OCAML_OTHER_LIBS = unix
 
 FILES[] =
-  syntax
-  ty
-  exp
-  stmt
+  ast
   parser
   lexer
   utils
   translate
+  printer
   main
 
 PROGRAM = ../gomac

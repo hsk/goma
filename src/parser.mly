@@ -1,8 +1,5 @@
 %{
-open Syntax
-open Ty
-open Stmt
-open Exp
+open Ast
 
 let addBlock = function
   | (SBlock _ as b) -> b
@@ -39,7 +36,7 @@ let addBlock = function
 %left prec_app
 %left DOT ARROW MEMBER
 %left AT
-%type <Stmt.t list> stmts
+%type <Ast.s list> stmts
 %start stmts
 
 %%
