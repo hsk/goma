@@ -1,0 +1,34 @@
+include "../lib/core.h"
+include stdio.h
+
+fib(a:int):int =
+  if (a < 2) return 1
+  else       return fib(a-2)+fib(a-1)
+
+Fib trait {
+  fib:()=>int
+}
+
+Int class (x:int)
+Int <: Fib {
+  fib():int =
+    if (@x < 2) return 1
+    else {
+      p1:Int(@x - 2)
+      p2:Int(@x - 1)
+      return p1:Fib=>fib() + p2:Fib=>fib()
+    }
+}
+
+main():int = {
+
+  start:long = gett()
+  result:int = fib(40)
+  printf("fib %d %d %ld\n", 40, result, gett() - start)
+
+  start = gett()
+  i:Int(40)
+  printf("fib %d %d %ld\n", i.x, i:Fib=>fib(), gett() - start)
+
+  return 0
+}
