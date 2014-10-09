@@ -6,11 +6,11 @@ Goma translate to c++.
 
 ## install
 
-    $ omake
+    $ make
 
 ## hello world
 
-hello.goma
+example/hello.goma
 
 ```
 include stdio.h
@@ -20,12 +20,12 @@ main():int = {
 }
 ```
 
-    $ ./gomac hello.goma hello.cpp
-    $ g++ hello.cpp
-    $ ./a.out
+    $ ./gomac example/hello.goma example/hello.cpp
+    $ g++ example/hello.cpp -o hello
+    $ ./hello
     hello world!
 
-hello.cpp
+example/hello.cpp
 
 ```
 #include <stdio.h>
