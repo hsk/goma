@@ -3,8 +3,7 @@ open Ty
 open Exp
 open Stmt
 
-let rec trans_exp (e:e):e =
-  match e with
+let rec trans_exp = function
   | EBin(e1,op,e2) -> EBin(trans_exp e1,op,trans_exp e2)
   | EPre(op,e1) -> EPre(op, trans_exp e1)
   | ECall(e1,es) -> ECall(trans_exp e1,List.map trans_exp es)
@@ -18,32 +17,14 @@ let rec trans_exp (e:e):e =
     end        
   | EArr(e1,es) -> ECall(trans_exp e1,List.map trans_exp es)
   | ECast(t,e) -> ECast(t, trans_exp e)
-  | EInt i -> e
-  | EString _ -> e
-  | EVar _ -> e
-  | EEmpty -> e
+  | EInt _ as e -> e
+  | EString _ as e -> e
+  | EVar _ as e -> e
+  | EEmpty as e -> e
 
-let rec trans_fun i i2 (t:t):t =
-  match t with
-  | SFun(t1,id,ls,SBlock b) ->
-    SFun(
-      t1,
-      i^"_"^i2^"_"^id,
-      (Ty "Class*","self_")::ls,
-
-      SBlock(
-        (SLet(Ty (i2 ^ "*"), EVar "self", ECast(Ty (i2 ^ "*"), EVar "self_")))::
-        (List.map (trans_fun i i2) b)
-      )
-
-    )
-  | t -> trans_stmt(t)
-
-and trans_stmt(t:t):t =
-  match t with
+let rec trans_stmt = function
   | SList(ls) -> SList(List.map trans_stmt ls)
   | STrait(id,ts) ->
-
     let ts =
       List.map begin function
         | (TFun(t1,ts),t) -> (TFun(t1,(Ty "Class*")::ts),t)
@@ -52,12 +33,24 @@ and trans_stmt(t:t):t =
     in
     SList([
       SStruct(id,"",ts);
-      (*
-        Vec* Fib2_v = newVec();
-      *)
       SLet(Ty "Vec*", EVar (id ^ "_v"), ECall(EVar"newVec",[]))
     ])
   | SImpl(id,id2,ss) ->
+    let rec trans_fun i i2 = function
+      | SFun(t1,id,ls,SBlock b) ->
+        SFun(
+          t1,
+          i^"_"^i2^"_"^id,
+          (Ty "Class*","self_")::ls,
+
+          SBlock(
+            (SLet(Ty (i2 ^ "*"), EVar "self", ECast(Ty (i2 ^ "*"), EVar "self_")))::
+            (List.map (trans_fun i i2) b)
+          )
+
+        )
+      | t -> trans_stmt(t)
+    in
     let ls = (List.fold_right begin fun s ls ->
       match s with
       | SFun(_, name ,_,_) ->
@@ -72,13 +65,10 @@ and trans_stmt(t:t):t =
         (SExp(ECall(EVar "setVec", [ EVar(id^"_v"); EVar (id2^"_classId"); ECast(Ty "void*",EVar "impl") ])))::
         ls
       ));
-      (*
-        "^id^"* "^id^"_Int_ = new"^id^"_Int();
-      *)
       SLet(Ty(id^"*"), EVar (id^"_"^id2^"_"), ECall(EVar("new"^id^"_"^id2),[]))
 
     ])
-  | SInclude _ -> t
+  | SInclude _ as t -> t
   | SLet(t,e1,e2) -> SLet(t, trans_exp e1, trans_exp e2)
   | SStruct(v,"",tts) ->
     SList[
@@ -119,7 +109,7 @@ and trans_stmt(t:t):t =
   | SCon(tyss,es,t1) ->
     SCon(tyss,es,t1)
   | SBlock(l) -> SBlock(List.map trans_stmt l)
-  | SEmpty -> t
+  | SEmpty as t -> t
   | SIf(e1,t1,t2) -> SIf(trans_exp e1, trans_stmt t1, trans_stmt t2)
   | SRet(e) -> SRet(trans_exp e)
   | SFun(ty, id, tyis, t2) -> SFun(ty, id, tyis, trans_stmt t2)
