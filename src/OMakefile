@@ -10,7 +10,7 @@ FILES[] =
   lexer
   utils
   translate
-  printer
+  gen_cpp
   main
 
 PROGRAM = ../gomac

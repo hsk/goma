@@ -9,7 +9,7 @@ let trans input output =
   let ast = Translate.trans_s(Ast.SList(ast)) in
 
   let out = open_out output in
-  Printer.print_s (Format.formatter_of_out_channel out) ast;
+  Gen_cpp.print_s (Format.formatter_of_out_channel out) ast;
   close_out out
 
 let _ =

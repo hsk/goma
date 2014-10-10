@@ -8,19 +8,19 @@ E :> EMul (x:*E,y:*E)
 
 Eval   trait { eval():int }
 Eval :> EInt { eval():int = return @x }
-Eval :> EAdd { eval():int = return (*@x):Eval=>eval() + (*@y):Eval=>eval() }
-Eval :> EMul { eval():int = return (*@x):Eval=>eval() * (*@y):Eval=>eval() }
+Eval :> EAdd { eval():int = return (*@x)|>Eval.eval() + (*@y)|>Eval.eval() }
+Eval :> EMul { eval():int = return (*@x)|>Eval.eval() * (*@y)|>Eval.eval() }
 
 main():int = {
   
   i:EInt(1)
-  printf("eval 1 = %d\n", i:Eval=>eval())
+  printf("eval 1 = %d\n", i|>Eval.eval())
 
   add:EAdd(new EInt(1), new EInt(2))
-  printf("eval 1 + 2 = %d\n", add:Eval=>eval())
+  printf("eval 1 + 2 = %d\n", add|>Eval.eval())
 
   mul:EMul(new EAdd(new EInt(1),new EInt(2)), new EInt(111))
-  printf("eval (1 + 2) * 111 = %d\n", mul:Eval=>eval())
+  printf("eval (1 + 2) * 111 = %d\n", mul|>Eval.eval())
 
   return 0
 }

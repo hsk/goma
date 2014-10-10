@@ -11,7 +11,7 @@ fib:
 	g++ example/fib.cpp -o fib
 	./fib
 
-calc:
+calc: example/calc.goma
 	./gomac example/calc.goma example/calc.cpp
 	g++ example/calc.cpp -o calc
 	./calc

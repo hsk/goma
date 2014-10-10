@@ -23,7 +23,7 @@ let addBlock = function
 %token STRUCT THIS DOT
 %token IF ELSE
 %token IMPLEMENT RIMPLEMENT TRAIT
-%token ARROW MEMBER
+%token ARROW MEMBER FARROW
 %token LT GT LE GE
 %token MUL AMP DIV
 %token CAST NEW AT
@@ -94,7 +94,7 @@ exp:
 | NEW exp { EPre("new", $2)}
 | AT exp { EBin(EVar "self", "->", $2)}
 | exp CAST typ { ECast($3, $1)}
-| exp COLON ID ARROW ID LPAREN RPAREN
+| exp FARROW ID DOT ID LPAREN RPAREN
     { ECallM($3, EBin($1, "->", EVar $5), []) }
 
 | init { $1 }

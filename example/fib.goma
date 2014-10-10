@@ -16,7 +16,7 @@ Int <: Fib {
     else {
       p1:Int(@x - 2)
       p2:Int(@x - 1)
-      return p1:Fib=>fib() + p2:Fib=>fib()
+      return p1|>Fib.fib() + p2|>Fib.fib()
     }
 }
 
@@ -28,7 +28,7 @@ main():int = {
 
   start = gett()
   i:Int(40)
-  printf("fib %d %d %ld\n", i.x, i:Fib=>fib(), gett() - start)
+  printf("fib %d %d %ld\n", i.x, i|>Fib.fib(), gett() - start)
 
   return 0
 }

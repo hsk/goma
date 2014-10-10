@@ -32,6 +32,7 @@ rule token = parse
 | ":>" { RIMPLEMENT }
 | "=>" { ARROW }
 | "->" { MEMBER }
+| "|>" { FARROW }
 | "if" { IF }
 | "else" {ELSE}
 | digit+
